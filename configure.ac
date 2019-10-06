@@ -106,41 +106,17 @@ case "$host" in
 esac
 AM_CONDITIONAL(COMPILE_MINGW32, [test "$mingw_compiler" = "yes"])
 
+case "$host" in
+  aarch64-none-elf)
+    AC_MSG_RESULT([yes])
+    ;;
+esac
+
 # Check if Microsoft LIB.EXE is available
 if test "$mingw_compiler" = "yes"; then
   AC_CHECK_PROG(ms_lib_exe, lib.exe, yes, no)
 fi
 AM_CONDITIONAL(MS_LIB_EXE, test x$ms_lib_exe = xyes)
-
-# Check for libusb-1.0
-PKG_CHECK_MODULES(LIBUSB, libusb-1.0 >= 1.0.0,[
-   LIBUSB_VER=`$PKG_CONFIG --modversion libusb-1.0`
-   LIBUSB_REQUIRES='libusb-1.0'
-   AC_DEFINE(HAVE_LIBUSB1, [], [Have libusb 1.0])
-   found_libusb1_pkg=yes
-],[
-   # Check for libopenusb second
-   AC_CHECK_LIB([openusb], [openusb_init],[
-	AC_DEFINE(HAVE_OPENUSB, [], [Have libopenusb 1.0])
-        LIBUSB_VER=1.0
-   ],[
-      PKG_CHECK_MODULES(LIBUSB, libusb >= 0.1.8, [
-         LIBUSB_VER=`$PKG_CONFIG --modversion libusb`
-         LIBUSB_REQUIRES='libusb'
-         AC_DEFINE(HAVE_LIBUSB0, [], [Have libusb 0.x])
-         found_libusb0_pkg=yes
-      ],[
-         # Some systems don't use pkg-config for libusb, so double check.
-         AC_CHECK_LIB([usb], [usb_open],[
-            LIBUSB_VER=0.1
-            AC_DEFINE(HAVE_LIBUSB0, [], [Have libusb 0.x])
-            found_libusb0_pkg=yes
-         ],[
-            AC_MSG_ERROR([*** libusb not found! (missing -dev/-devel package?) ***\n*** prefer to install libusb-1 if you can! ***])
-         ])
-      ])
-   ])
-])
 
 # Optionally disable MTPZ functionality.
 AC_ARG_ENABLE([mtpz],
@@ -162,15 +138,7 @@ else
 	AC_MSG_NOTICE([MTPZ functionality disable]);
 fi
 
-
-AC_SUBST(LIBUSB_CFLAGS)
-AC_SUBST(LIBUSB_LIBS)
-AC_SUBST(LIBUSB_REQUIRES)
 AM_CONDITIONAL(MTPZ_COMPILE, test x"$use_mtpz" = "xyes")
-AM_CONDITIONAL(LIBUSB1_COMPILE, test x"$found_libusb1_pkg" = "xyes")
-AM_CONDITIONAL(LIBUSB0_COMPILE, test x"$found_libusb0_pkg" = "xyes")
-AM_CONDITIONAL(LIBOPENUSB_COMPILE, test x"$ac_cv_lib_openusb_openusb_init" = "xyes")
-AC_MSG_NOTICE([*** using libusb $LIBUSB_VER ***])
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -216,7 +184,6 @@ AX_NEED_STDINT_H([src/_stdint.h])
 # hard-coded byte swapper that will be eternally portable.
 AC_NEED_BYTEORDER_H(src/gphoto2-endian.h)
 
-AC_CONFIG_FILES([src/libmtp.h doc/Doxyfile Makefile doc/Makefile src/Makefile
-	examples/Makefile util/Makefile libmtp.sh hotplug.sh libmtp.pc])
+AC_CONFIG_FILES([src/libmtp.h doc/Doxyfile Makefile doc/Makefile src/Makefile util/Makefile libmtp.sh hotplug.sh libmtp.pc])
 AC_OUTPUT
 chmod +x hotplug.sh

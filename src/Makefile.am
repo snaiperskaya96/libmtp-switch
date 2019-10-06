@@ -1,6 +1,6 @@
 lib_LTLIBRARIES = libmtp.la
 
-libmtp_la_CFLAGS = @LIBUSB_CFLAGS@
+#libmtp_la_CFLAGS = @LIBUSB_CFLAGS@
 libmtp_la_SOURCES = libmtp.c unicode.c unicode.h util.c util.h playlist-spl.c \
 	gphoto2-endian.h _stdint.h ptp.c ptp.h libusb-glue.h \
 	music-players.h device-flags.h playlist-spl.h mtpz.h \
@@ -8,18 +8,6 @@ libmtp_la_SOURCES = libmtp.c unicode.c unicode.h util.c util.h playlist-spl.c \
 
 if MTPZ_COMPILE
 libmtp_la_SOURCES += mtpz.c
-endif
-
-if LIBUSB1_COMPILE
-libmtp_la_SOURCES += libusb1-glue.c
-endif
-
-if LIBUSB0_COMPILE
-libmtp_la_SOURCES += libusb-glue.c
-endif
-
-if LIBOPENUSB_COMPILE
-libmtp_la_SOURCES += libopenusb1-glue.c
 endif
 
 include_HEADERS=libmtp.h
